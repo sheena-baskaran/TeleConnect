@@ -69,14 +69,26 @@ app/         streamlit_app.py (live demo)
 Requires Python 3.13 (3.11+ should work).
 
 ```bash
+# 1. Create the virtual environment
 python -m venv .venv
-# Windows:  .venv\Scripts\activate     |  macOS/Linux:  source .venv/bin/activate
 
+# 2. ACTIVATE it (do this in every new terminal before running anything below)
+#    Windows PowerShell:
+.venv\Scripts\Activate.ps1
+#    Windows cmd:         .venv\Scripts\activate.bat
+#    macOS/Linux:         source .venv/bin/activate
+
+# 3. Install dependencies
 pip install -r requirements.txt           # runtime (app, eval, inference)
 pip install -r requirements-dev.txt       # + notebook & viz (to re-run Part 1)
 
-cp .env.example .env                        # add a funded ANTHROPIC_API_KEY for live LLM
+# 4. (optional) configure a live LLM key
+cp .env.example .env                        # add a funded ANTHROPIC_API_KEY
 ```
+
+> All the `python ...` / `streamlit ...` / `jupyter ...` commands below assume the venv is
+> **activated** (step 2). If PowerShell blocks activation, run once:
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 **API key.** The agent and LLM-judge use Anthropic Claude. With a funded `ANTHROPIC_API_KEY`
 they run live; **without one (or with `FORCE_MOCK_LLM=1`) the system falls back to a
