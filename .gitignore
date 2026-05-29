@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets / env
+.env
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Eval run artifacts (keep the committed scorecard, ignore raw transcript dumps)
+eval/results/raw_runs/
+*.log
+
+# Interaction log produced by the log_interaction tool at runtime
+data/interaction_log.jsonl
