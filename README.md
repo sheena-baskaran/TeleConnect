@@ -64,64 +64,44 @@ app/         streamlit_app.py (live demo)
 
 ---
 
-## Setup
+## Setup & run (Windows PowerShell)
 
-Requires Python 3.13 (3.11+ should work).
+Requires Python 3.13 (3.11+ should work). Run these from the project folder:
 
-```bash
-# 1. Create the virtual environment
+```powershell
+# 1. Create and activate the virtual environment
 python -m venv .venv
+Set-ExecutionPolicy -Scope Process -Bypass    # allows activation in THIS window only
+.venv\Scripts\Activate.ps1                    # prompt now starts with (.venv)
 
-# 2. ACTIVATE it (do this in every new terminal before running anything below)
-#    Windows PowerShell:
-.venv\Scripts\Activate.ps1
-#    Windows cmd:         .venv\Scripts\activate.bat
-#    macOS/Linux:         source .venv/bin/activate
+# 2. Install dependencies
+pip install -r requirements.txt               # runtime: app + eval
+pip install -r requirements-dev.txt           # + notebook & plotting (only to re-run Part 1)
 
-# 3. Install dependencies
-pip install -r requirements.txt           # runtime (app, eval, inference)
-pip install -r requirements-dev.txt       # + notebook & viz (to re-run Part 1)
-
-# 4. (optional) configure a live LLM key
-cp .env.example .env                        # add a funded ANTHROPIC_API_KEY
+# 3. Run the demo (no API key needed — uses the built-in mock agent)
+$env:FORCE_MOCK_LLM = "1"
+streamlit run app/streamlit_app.py            # opens http://localhost:8501
 ```
 
-> All the `python ...` / `streamlit ...` / `jupyter ...` commands below assume the venv is
-> **activated** (step 2). If PowerShell blocks activation, run once:
-> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+Open **http://localhost:8501**, click an example in the sidebar (or type a message), and expand
+the **🔧 Tool chain** under each answer to see every tool call, its input, and its output.
 
-**API key.** The agent and LLM-judge use Anthropic Claude. With a funded `ANTHROPIC_API_KEY`
-they run live; **without one (or with `FORCE_MOCK_LLM=1`) the system falls back to a
-deterministic mock agent + judge** so everything still runs end-to-end — the demo and evals are
-never blocked on a key. Mock mode is clearly labeled everywhere.
+```powershell
+# Run the evaluation suite (writes eval/results/scorecard.md)
+python -m eval.run_eval --no-judge            # automated metrics, fast & free
 
-### Run each part
-```bash
-# Part 1 — regenerate the notebook and execute it (writes model artifacts + cleaned CSV)
+# Re-run Part 1 (rebuilds + executes the notebook, re-exports the model)
 python notebooks/_build_notebook.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/churn_model.ipynb
-
-# Part 2 — the agent eval suite (use --no-judge for a fast, free, deterministic run)
-python -m eval.run_eval                     # automated metrics + LLM-judge
-python -m eval.run_eval --no-judge          # automated metrics only
-
-# Part 2 — the live demo locally  (opens at http://localhost:8501)
-streamlit run app/streamlit_app.py
 ```
 
-**Run the demo with no API key (mock mode).** Force the deterministic mock agent so it works
-offline / for free:
+> **macOS/Linux:** activate with `source .venv/bin/activate`; set the key with
+> `export FORCE_MOCK_LLM=1` instead of `$env:...`.
 
-```bash
-# macOS/Linux
-FORCE_MOCK_LLM=1 streamlit run app/streamlit_app.py
-
-# Windows PowerShell
-$env:FORCE_MOCK_LLM=1; streamlit run app/streamlit_app.py
-```
-
-Then open **http://localhost:8501**, click an example in the sidebar (or type a message), and
-expand the **🔧 Tool chain** under each answer to see every tool call, its input, and its output.
+**API key (optional).** The agent + LLM-judge use Anthropic Claude. With a funded
+`ANTHROPIC_API_KEY` (copy `.env.example` to `.env`) they run live; otherwise the system uses a
+deterministic **mock agent + judge** so everything still runs end-to-end. Mock mode is labeled in
+the UI and the scorecard.
 
 ---
 
