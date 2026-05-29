@@ -53,18 +53,25 @@ class LLMResponse:
         return [b for b in self.blocks if b["type"] == "tool_use"]
 
 
+def _force_mock() -> bool:
+    return os.getenv("FORCE_MOCK_LLM", "").lower() in {"1", "true", "yes"}
+
+
 def get_client(role: str = "agent"):
     """
     Factory. role='agent' uses AGENT_MODEL, role='judge' uses JUDGE_MODEL.
-    Falls back to MockClient when no API key is configured.
+
+    Uses the real Anthropic client when an API key is configured, unless
+    FORCE_MOCK_LLM is set (handy for offline/CI runs, or when a key is present
+    but has no billing credits). Falls back to MockClient otherwise.
     """
-    if os.getenv("ANTHROPIC_API_KEY"):
+    if os.getenv("ANTHROPIC_API_KEY") and not _force_mock():
         return AnthropicClient(role=role)
     return MockClient(role=role)
 
 
 def using_mock() -> bool:
-    return not bool(os.getenv("ANTHROPIC_API_KEY"))
+    return _force_mock() or not bool(os.getenv("ANTHROPIC_API_KEY"))
 
 
 # --------------------------------------------------------------------------- #
@@ -111,9 +118,14 @@ class AnthropicClient:
 _ID_RE = re.compile(r"\bTC[-\s]?(\d{4,6})\b", re.IGNORECASE)
 _ESCALATION_KEYWORDS = [
     "lawyer", "legal action", "sue", "lawsuit", "attorney", "court",
-    "regulator", "ombudsman", "discrimination", "media", "press",
+    "regulator", "ombudsman", "discrimination", "media", "press", "complaint",
 ]
-_OUT_OF_SCOPE_KEYWORDS = ["weather", "password reset", "joke", "stock price", "recipe"]
+_OUT_OF_SCOPE_KEYWORDS = ["weather", "password", "joke", "stock price", "recipe"]
+
+# Match on whole words/phrases, not substrings — otherwise "media" matches
+# "immediately", "sue" matches "issue", "court" matches "discount", etc.
+def _kw_hit(text: str, keywords: list[str]) -> bool:
+    return any(re.search(rf"\b{re.escape(k)}\b", text) for k in keywords)
 
 
 class MockClient:
@@ -144,7 +156,7 @@ class MockClient:
         lower = first_user.lower()
 
         # 1) Escalation triggers take precedence.
-        if any(k in lower for k in _ESCALATION_KEYWORDS):
+        if _kw_hit(lower, _ESCALATION_KEYWORDS):
             if "escalate_to_supervisor" not in called:
                 return ([{
                     "type": "tool_use", "id": "mock_esc", "name": "escalate_to_supervisor",
@@ -160,7 +172,7 @@ class MockClient:
                       "should not handle alone. A supervisor will take over the case."}], "end_turn")
 
         # 2) Out-of-scope.
-        if any(k in lower for k in _OUT_OF_SCOPE_KEYWORDS):
+        if _kw_hit(lower, _OUT_OF_SCOPE_KEYWORDS):
             return ([{"type": "text", "text":
                       "That request is outside what I can help with — I'm focused on "
                       "customer retention (looking up customers, assessing churn risk, and "
@@ -181,6 +193,16 @@ class MockClient:
         if "lookup_customer" not in called:
             return ([{"type": "tool_use", "id": "mock_lk", "name": "lookup_customer",
                       "input": {"customer_id": cid}}], "tool_use")
+
+        # Safety: if the lookup failed (unknown ID), STOP — do not predict on a
+        # non-existent customer (that would fabricate a churn score).
+        if (isinstance(last_result, dict) and last_result.get("found") is False
+                and "predict_churn" not in called):
+            return ([{"type": "text", "text":
+                      f"I couldn't find a customer with ID {cid or 'that ID'} — the lookup "
+                      "returned 'not found'. Could you double-check the ID with the customer? "
+                      "It should look like 'TC-001234'. I don't want to assess risk for the "
+                      "wrong account."}], "end_turn")
 
         if "predict_churn" not in called:
             features = {}
