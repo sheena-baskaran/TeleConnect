@@ -7,6 +7,7 @@ streamlit==1.58.0
 
 # Agent / LLM
 anthropic==0.105.2
+groq==0.10.0
 python-dotenv==1.2.2
 
 # Model loading + inference (the exported pipeline is scikit-learn; xgboost kept

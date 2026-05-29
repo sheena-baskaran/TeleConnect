@@ -74,12 +74,15 @@ def get_client(role: str = "agent"):
     Factory. role='agent' uses AGENT_MODEL, role='judge' uses JUDGE_MODEL.
 
     Provider is chosen by LLM_PROVIDER (env), else inferred:
+      - "groq"              -> GroqClient (cloud-hosted, free tier, fast inference)
       - "ollama"            -> OllamaClient (local, free, no API key; needs Ollama running)
       - "anthropic"         -> AnthropicClient (needs a funded ANTHROPIC_API_KEY)
       - "mock" / fallback   -> deterministic MockClient
     FORCE_MOCK_LLM=1 overrides everything (handy for offline/CI runs).
     """
     provider = _provider()
+    if provider == "groq":
+        return GroqClient(role=role)
     if provider == "ollama":
         return OllamaClient(role=role)
     if provider == "anthropic":
@@ -125,6 +128,88 @@ class AnthropicClient:
         return LLMResponse(
             blocks=blocks, stop_reason=resp.stop_reason,
             input_tokens=resp.usage.input_tokens, output_tokens=resp.usage.output_tokens,
+            latency_ms=latency, model=self.model, is_mock=False,
+        )
+
+
+# --------------------------------------------------------------------------- #
+# Groq client (fast cloud LLM, free tier, API key required)                  #
+# --------------------------------------------------------------------------- #
+# Groq offers ultra-fast inference (~0.5 sec/request) with a free tier.
+# To use:
+#     1) sign up at https://groq.com and get a free API key
+#     2) set  LLM_PROVIDER=groq  GROQ_API_KEY=gsk_...
+class GroqClient:
+    def __init__(self, role: str = "agent"):
+        from groq import Groq
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY env var is required for Groq provider")
+        self.client = Groq(api_key=api_key)
+        if role == "judge":
+            self.model = os.getenv("GROQ_JUDGE_MODEL", "mixtral-8x7b-32768")
+        else:
+            self.model = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
+        self.is_mock = False
+
+    def respond(self, system: str, messages: list[dict], tools: list[dict] | None = None,
+                max_tokens: int = 1500, temperature: float = 0.0) -> LLMResponse:
+        t0 = time.perf_counter()
+        # Convert Anthropic-style messages to Groq format
+        groq_messages = [{"role": "system", "content": system}]
+        for m in messages:
+            if m["role"] == "user":
+                if isinstance(m["content"], str):
+                    groq_messages.append({"role": "user", "content": m["content"]})
+                else:
+                    # Content is a list of blocks
+                    for block in m["content"]:
+                        if isinstance(block, dict):
+                            if block.get("type") == "text":
+                                groq_messages.append({"role": "user", "content": block["text"]})
+            elif m["role"] == "assistant":
+                if isinstance(m["content"], str):
+                    groq_messages.append({"role": "assistant", "content": m["content"]})
+                else:
+                    # Content is a list of blocks
+                    text = "".join(b["text"] for b in m["content"]
+                                   if isinstance(b, dict) and b.get("type") == "text")
+                    if text:
+                        groq_messages.append({"role": "assistant", "content": text})
+
+        # Convert Anthropic tool schemas to Groq format
+        groq_tools = None
+        if tools:
+            groq_tools = [{"type": "function",
+                          "function": {"name": t["name"], "description": t.get("description", ""),
+                                     "parameters": t.get("input_schema", {"type": "object"})}}
+                         for t in tools]
+
+        resp = self.client.chat.completions.create(
+            model=self.model,
+            messages=groq_messages,
+            tools=groq_tools,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        latency = (time.perf_counter() - t0) * 1000
+
+        blocks = []
+        if resp.choices[0].message.content:
+            blocks.append({"type": "text", "text": resp.choices[0].message.content})
+
+        if resp.choices[0].message.tool_calls:
+            for tool_call in resp.choices[0].message.tool_calls:
+                blocks.append({
+                    "type": "tool_use",
+                    "id": tool_call.id,
+                    "name": tool_call.function.name,
+                    "input": json.loads(tool_call.function.arguments) if isinstance(tool_call.function.arguments, str) else tool_call.function.arguments,
+                })
+
+        return LLMResponse(
+            blocks=blocks, stop_reason="stop",
+            input_tokens=0, output_tokens=0,
             latency_ms=latency, model=self.model, is_mock=False,
         )
 
