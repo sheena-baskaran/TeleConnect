@@ -1,6 +1,6 @@
 # TeleConnect Churn Model — Full Model Comparison Report
 
-Generated: 2026-05-29 17:47 UTC
+Generated: 2026-05-29 17:48 UTC
 Dataset: `data/test_datafile.csv` (5,050 raw rows → 5,000 after cleaning)
 Test split: 20% holdout, stratified by churn label (seed=42)
 Base churn rate: **36.5%**

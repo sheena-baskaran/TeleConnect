@@ -36,14 +36,9 @@
     "parameter_extraction_accuracy": 0.905,
     "response_completeness": 1.0
   },
-  "judge_dimensions": {
-    "factual_correctness": 4,
-    "tool_use_appropriateness": 4,
-    "actionability": 4,
-    "hallucination": 5
-  },
+  "judge_dimensions": {},
   "cost": {
-    "avg_latency_ms": 211.5,
+    "avg_latency_ms": 213.1,
     "total_input_tokens": 0,
     "total_output_tokens": 0
   },
@@ -88,33 +83,8 @@
         "missing": []
       },
       "passed": false,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 2867.2,
+      "judge": null,
+      "latency_ms": 2864.1,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -166,33 +136,8 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 20.1,
+      "judge": null,
+      "latency_ms": 27.4,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -243,33 +188,8 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 17.8,
+      "judge": null,
+      "latency_ms": 20.4,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -321,33 +241,8 @@
       },
       "completeness": null,
       "passed": false,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 17.0,
+      "judge": null,
+      "latency_ms": 21.7,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -374,32 +269,7 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
+      "judge": null,
       "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -421,32 +291,7 @@
       "parameter_extraction": null,
       "completeness": null,
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
+      "judge": null,
       "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -468,33 +313,8 @@
       "parameter_extraction": null,
       "completeness": null,
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 0.2,
+      "judge": null,
+      "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -515,32 +335,7 @@
       "parameter_extraction": null,
       "completeness": null,
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
+      "judge": null,
       "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -570,32 +365,7 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
+      "judge": null,
       "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -625,32 +395,7 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
+      "judge": null,
       "latency_ms": 0.2,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -695,33 +440,8 @@
         "missing": []
       },
       "passed": false,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 19.5,
+      "judge": null,
+      "latency_ms": 26.1,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -763,33 +483,8 @@
         "missing": []
       },
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.2
-      },
-      "latency_ms": 0.5,
+      "judge": null,
+      "latency_ms": 0.3,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -810,33 +505,8 @@
       "parameter_extraction": null,
       "completeness": null,
       "passed": true,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 0.4,
+      "judge": null,
+      "latency_ms": 0.1,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
@@ -874,33 +544,8 @@
       },
       "completeness": null,
       "passed": false,
-      "judge": {
-        "dimensions": {
-          "factual_correctness": {
-            "score": 4,
-            "justification": "(mock judge) No API key set; returning a neutral-positive placeholder score. Set ANTHROPIC_API_KEY for real grading."
-          },
-          "tool_use_appropriateness": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "actionability": {
-            "score": 4,
-            "justification": "(mock) placeholder"
-          },
-          "hallucination": {
-            "score": 5,
-            "justification": "(mock) placeholder \u2014 assumes grounded"
-          }
-        },
-        "overall_comment": "Mock judge output. Scores are placeholders, not real evaluations.",
-        "mean_score": 4.25,
-        "rubric_version": "1.0",
-        "judge_model": "mock-judge",
-        "is_mock": true,
-        "judge_latency_ms": 0.0
-      },
-      "latency_ms": 18.1,
+      "judge": null,
+      "latency_ms": 22.5,
       "input_tokens": 0,
       "output_tokens": 0,
       "is_mock_agent": true
