@@ -46,10 +46,17 @@ with st.sidebar:
     st.caption("AI copilot for TeleConnect retention reps")
 
     if using_mock():
-        st.warning("**Mock mode** — no funded API key detected. Running the deterministic "
-                   "mock agent. Set `ANTHROPIC_API_KEY` in secrets for the live LLM agent.")
+        st.warning("**Mock mode** — no LLM provider configured. Running the deterministic "
+                   "mock agent. Set `ANTHROPIC_API_KEY`, or `LLM_PROVIDER=ollama` for a local "
+                   "model, to use a real LLM.")
     else:
-        st.success(f"**Live mode** — model: `{os.getenv('AGENT_MODEL', 'claude-sonnet-4-6')}`")
+        provider = os.getenv("LLM_PROVIDER", "anthropic").lower()
+        if provider == "ollama":
+            model = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
+            st.success(f"**Live mode** — local Ollama · model: `{model}`")
+        else:
+            st.success(f"**Live mode** — Anthropic · model: "
+                       f"`{os.getenv('AGENT_MODEL', 'claude-sonnet-4-6')}`")
 
     st.markdown("### Try an example")
     examples = {

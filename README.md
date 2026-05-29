@@ -103,6 +103,32 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/churn_model.ipynb
 deterministic **mock agent + judge** so everything still runs end-to-end. Mock mode is labeled in
 the UI and the scorecard.
 
+### Run with a local open-source LLM (Ollama — free, no API key)
+
+The provider layer also supports a local model, so you can run the **real** (non-mock) agent and
+get genuine LLM-judge scores without any cloud key. We use [Ollama](https://ollama.com) and talk
+to it over its native HTTP API (no extra Python packages). The model is **downloaded by you, not
+committed** (it's several GB):
+
+```powershell
+# 1. Install Ollama from https://ollama.com, then download a tool-calling model:
+ollama pull qwen2.5:7b-instruct        # ~4.7 GB. (llama3.1:8b also works)
+
+# 2. Point the project at Ollama and run (mock OFF, provider = ollama):
+$env:FORCE_MOCK_LLM = ""
+$env:LLM_PROVIDER = "ollama"
+$env:OLLAMA_MODEL = "qwen2.5:7b-instruct"
+
+streamlit run app/streamlit_app.py     # sidebar shows "Live mode — local Ollama"
+python -m eval.run_eval                 # real agent + real LLM-judge, $0 cost
+```
+
+> **Pick a tool-calling model.** `qwen2.5:7b-instruct` and `llama3.1:8b` support function calling
+> reliably; a generic base model will not chain tools well. To use a remote machine's Ollama (e.g.
+> via an ngrok tunnel), set `OLLAMA_BASE_URL` to that URL. **Note:** a local model can't power the
+> *hosted* Streamlit Cloud demo (no GPU/RAM there) — use it for local dev + the eval scorecard,
+> and deploy the public demo in mock mode or with a hosted key.
+
 ---
 
 ## Part 1 — Churn model (highlights)

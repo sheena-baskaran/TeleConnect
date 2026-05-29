@@ -57,21 +57,38 @@ def _force_mock() -> bool:
     return os.getenv("FORCE_MOCK_LLM", "").lower() in {"1", "true", "yes"}
 
 
+def _provider() -> str:
+    """Resolve the active provider. FORCE_MOCK_LLM always wins."""
+    if _force_mock():
+        return "mock"
+    explicit = os.getenv("LLM_PROVIDER", "").strip().lower()
+    if explicit:
+        return explicit
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return "anthropic"
+    return "mock"
+
+
 def get_client(role: str = "agent"):
     """
     Factory. role='agent' uses AGENT_MODEL, role='judge' uses JUDGE_MODEL.
 
-    Uses the real Anthropic client when an API key is configured, unless
-    FORCE_MOCK_LLM is set (handy for offline/CI runs, or when a key is present
-    but has no billing credits). Falls back to MockClient otherwise.
+    Provider is chosen by LLM_PROVIDER (env), else inferred:
+      - "ollama"            -> OllamaClient (local, free, no API key; needs Ollama running)
+      - "anthropic"         -> AnthropicClient (needs a funded ANTHROPIC_API_KEY)
+      - "mock" / fallback   -> deterministic MockClient
+    FORCE_MOCK_LLM=1 overrides everything (handy for offline/CI runs).
     """
-    if os.getenv("ANTHROPIC_API_KEY") and not _force_mock():
+    provider = _provider()
+    if provider == "ollama":
+        return OllamaClient(role=role)
+    if provider == "anthropic":
         return AnthropicClient(role=role)
     return MockClient(role=role)
 
 
 def using_mock() -> bool:
-    return _force_mock() or not bool(os.getenv("ANTHROPIC_API_KEY"))
+    return _provider() == "mock"
 
 
 # --------------------------------------------------------------------------- #
@@ -108,6 +125,121 @@ class AnthropicClient:
         return LLMResponse(
             blocks=blocks, stop_reason=resp.stop_reason,
             input_tokens=resp.usage.input_tokens, output_tokens=resp.usage.output_tokens,
+            latency_ms=latency, model=self.model, is_mock=False,
+        )
+
+
+# --------------------------------------------------------------------------- #
+# Local Ollama client (open-source LLMs, no API key, no extra pip deps)       #
+# --------------------------------------------------------------------------- #
+# Talks to Ollama's native /api/chat endpoint via the standard library only.
+# Ollama is OpenAI-style under the hood and supports tool calling for models
+# like qwen2.5 and llama3.1. To use:
+#     1) install Ollama (https://ollama.com) and `ollama pull qwen2.5:7b-instruct`
+#     2) set  LLM_PROVIDER=ollama  (optionally OLLAMA_MODEL / OLLAMA_BASE_URL)
+# The SAME class works against any remote Ollama (e.g. an ngrok tunnel) — just
+# point OLLAMA_BASE_URL at the public URL.
+class OllamaClient:
+    def __init__(self, role: str = "agent"):
+        import urllib.request  # stdlib — declared here so import cost is local
+        self._urllib = urllib.request
+        self.base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+        default = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
+        if role == "judge":
+            self.model = os.getenv("OLLAMA_JUDGE_MODEL", default)
+        else:
+            self.model = default
+        self.is_mock = False
+
+    # ---- format translation: our Anthropic-style blocks <-> Ollama/OpenAI ---- #
+    @staticmethod
+    def _to_chat_messages(system: str, messages: list[dict]) -> list[dict]:
+        out = [{"role": "system", "content": system}]
+        for m in messages:
+            content = m["content"]
+            if m["role"] == "user":
+                if isinstance(content, str):
+                    out.append({"role": "user", "content": content})
+                    continue
+                # list of blocks: tool_result(s) and/or text
+                for b in content:
+                    if not isinstance(b, dict):
+                        continue
+                    if b.get("type") == "tool_result":
+                        out.append({"role": "tool", "content": str(b.get("content", ""))})
+                    elif b.get("type") == "text":
+                        out.append({"role": "user", "content": b["text"]})
+            elif m["role"] == "assistant":
+                if isinstance(content, str):
+                    out.append({"role": "assistant", "content": content})
+                    continue
+                text = "".join(b["text"] for b in content
+                               if isinstance(b, dict) and b.get("type") == "text")
+                tool_calls = [{
+                    "type": "function",
+                    "function": {"name": b["name"], "arguments": b.get("input", {})},
+                } for b in content if isinstance(b, dict) and b.get("type") == "tool_use"]
+                msg = {"role": "assistant", "content": text}
+                if tool_calls:
+                    msg["tool_calls"] = tool_calls
+                out.append(msg)
+        return out
+
+    @staticmethod
+    def _to_ollama_tools(tools: list[dict] | None) -> list[dict] | None:
+        if not tools:
+            return None
+        return [{"type": "function",
+                 "function": {"name": t["name"], "description": t.get("description", ""),
+                              "parameters": t.get("input_schema", {"type": "object"})}}
+                for t in tools]
+
+    def respond(self, system: str, messages: list[dict], tools: list[dict] | None = None,
+                max_tokens: int = 1500, temperature: float = 0.0) -> LLMResponse:
+        t0 = time.perf_counter()
+        payload = {
+            "model": self.model,
+            "messages": self._to_chat_messages(system, messages),
+            "stream": False,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        }
+        ot = self._to_ollama_tools(tools)
+        if ot:
+            payload["tools"] = ot
+
+        req = self._urllib.Request(
+            f"{self.base_url}/api/chat",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with self._urllib.urlopen(req, timeout=120) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        latency = (time.perf_counter() - t0) * 1000
+
+        message = data.get("message", {}) or {}
+        blocks: list[dict] = []
+        text = message.get("content") or ""
+        if text:
+            blocks.append({"type": "text", "text": text})
+
+        tool_calls = message.get("tool_calls") or []
+        for i, tc in enumerate(tool_calls):
+            fn = tc.get("function", {})
+            args = fn.get("arguments", {})
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except Exception:
+                    args = {}
+            blocks.append({"type": "tool_use", "id": f"ollama_{i}",
+                           "name": fn.get("name", ""), "input": args})
+
+        stop_reason = "tool_use" if tool_calls else "end_turn"
+        return LLMResponse(
+            blocks=blocks, stop_reason=stop_reason,
+            input_tokens=data.get("prompt_eval_count", 0),
+            output_tokens=data.get("eval_count", 0),
             latency_ms=latency, model=self.model, is_mock=False,
         )
 
