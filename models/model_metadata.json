@@ -1,0 +1,208 @@
+{
+  "model_name": "LogisticRegression",
+  "version": "1.0.0",
+  "trained_at_utc": "2026-05-29T14:17:15.270725+00:00",
+  "base_churn_rate": 0.3646,
+  "n_training_rows": 5000,
+  "numeric_features": [
+    "age",
+    "tenure_months",
+    "monthly_charges",
+    "total_charges",
+    "avg_monthly_gb_used",
+    "num_support_tickets",
+    "avg_monthly_minutes",
+    "satisfaction_score",
+    "num_additional_services",
+    "charges_per_tenure_month",
+    "tickets_per_tenure_year",
+    "expected_vs_actual_charges_gap"
+  ],
+  "categorical_features": [
+    "gender",
+    "contract_type",
+    "internet_service",
+    "phone_service",
+    "payment_method",
+    "tenure_bucket",
+    "has_bundle"
+  ],
+  "threshold_low": 0.5075,
+  "threshold_high": 0.6588,
+  "feature_directions": {
+    "age": 1.0,
+    "tenure_months": -1.0,
+    "monthly_charges": -1.0,
+    "total_charges": -1.0,
+    "avg_monthly_gb_used": -1.0,
+    "num_support_tickets": 1.0,
+    "avg_monthly_minutes": -1.0,
+    "satisfaction_score": -1.0,
+    "num_additional_services": -1.0,
+    "charges_per_tenure_month": -1.0,
+    "tickets_per_tenure_year": 1.0,
+    "expected_vs_actual_charges_gap": 1.0
+  },
+  "numeric_stats": {
+    "age": {
+      "mean": 42.42448647003511,
+      "std": 14.190728429412998
+    },
+    "tenure_months": {
+      "mean": 24.034741590701362,
+      "std": 23.42321764235737
+    },
+    "monthly_charges": {
+      "mean": 65.14673825772783,
+      "std": 24.605585345079657
+    },
+    "total_charges": {
+      "mean": 1558.337252030559,
+      "std": 1729.055311567062
+    },
+    "avg_monthly_gb_used": {
+      "mean": 15.338233165829147,
+      "std": 15.202451254963297
+    },
+    "num_support_tickets": {
+      "mean": 1.9793587174348697,
+      "std": 1.4023198964507055
+    },
+    "avg_monthly_minutes": {
+      "mean": 299.33172764227646,
+      "std": 117.93152153931868
+    },
+    "satisfaction_score": {
+      "mean": 5.924648760330579,
+      "std": 1.9020632146687733
+    },
+    "num_additional_services": {
+      "mean": 2.4834,
+      "std": 1.7114643618996017
+    },
+    "charges_per_tenure_month": {
+      "mean": 66.16849590484792,
+      "std": 32.87527960822274
+    },
+    "tickets_per_tenure_year": {
+      "mean": 3.5117742700113426,
+      "std": 6.986106562204427
+    },
+    "expected_vs_actual_charges_gap": {
+      "mean": -7.032135009045116,
+      "std": 178.74219763847557
+    }
+  },
+  "categorical_churn_lift": {
+    "gender=Female": -0.014814592274678073,
+    "gender=Male": 0.015899405469678995,
+    "gender=Unknown": -0.03806938775510205,
+    "contract_type=Month-to-month": 0.12467038626609445,
+    "contract_type=One year": -0.1547639344262295,
+    "contract_type=Two year": -0.1623642276422764,
+    "internet_service=DSL": -0.014141284403669685,
+    "internet_service=Fiber optic": 0.013146610565684946,
+    "internet_service=No": -0.018920987654320987,
+    "internet_service=Unknown": 0.017693762575452743,
+    "phone_service=No": 0.006703395399780987,
+    "phone_service=Yes": -0.0038564587271581185,
+    "payment_method=Bank transfer": -0.0014267831149927246,
+    "payment_method=Credit card": 0.0024886075949367426,
+    "payment_method=Electronic check": -0.007991521197007467,
+    "payment_method=Mailed check": 0.01005940054495913,
+    "payment_method=Unknown": 0.002066666666666661,
+    "tenure_bucket=established_24_48m": -0.034485864793678656,
+    "tenure_bucket=growing_6_24m": 0.0024082967301122804,
+    "tenure_bucket=loyal_48m_plus": -0.05440169971671388,
+    "tenure_bucket=new_0_6m": 0.0671140238313474,
+    "tenure_bucket=unknown": -0.031266666666666665,
+    "has_bundle=bundled": -0.003453771597134392,
+    "has_bundle=unbundled": 0.0031198325085649015
+  },
+  "global_importance": [
+    [
+      "contract_type",
+      0.4311589935353004
+    ],
+    [
+      "tenure_bucket",
+      0.13852226341996088
+    ],
+    [
+      "satisfaction_score",
+      0.07168449341595043
+    ],
+    [
+      "tenure_months",
+      0.06859835212967634
+    ],
+    [
+      "internet_service",
+      0.06685526001750797
+    ],
+    [
+      "gender",
+      0.050415374721568575
+    ],
+    [
+      "payment_method",
+      0.0402511883871653
+    ],
+    [
+      "has_bundle",
+      0.02925469744931815
+    ],
+    [
+      "phone_service",
+      0.029254697449317642
+    ],
+    [
+      "num_support_tickets",
+      0.023582522892035312
+    ],
+    [
+      "avg_monthly_minutes",
+      0.012138128624850043
+    ],
+    [
+      "total_charges",
+      0.00955115403768238
+    ],
+    [
+      "charges_per_tenure_month",
+      0.008563189584804301
+    ],
+    [
+      "avg_monthly_gb_used",
+      0.006726823430704735
+    ],
+    [
+      "monthly_charges",
+      0.005189849636774181
+    ],
+    [
+      "age",
+      0.004690174519646245
+    ],
+    [
+      "tickets_per_tenure_year",
+      0.0017322613164958917
+    ],
+    [
+      "num_additional_services",
+      0.0012361460944715305
+    ],
+    [
+      "expected_vs_actual_charges_gap",
+      0.0005944293367697734
+    ]
+  ],
+  "test_metrics": {
+    "accuracy": 0.642,
+    "precision": 0.507,
+    "recall": 0.742,
+    "f1": 0.602,
+    "roc_auc": 0.71,
+    "pr_auc": 0.534
+  }
+}
