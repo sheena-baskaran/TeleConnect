@@ -93,9 +93,23 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/churn_model.ipynb
 python -m eval.run_eval                     # automated metrics + LLM-judge
 python -m eval.run_eval --no-judge          # automated metrics only
 
-# Part 2 — the live demo locally
+# Part 2 — the live demo locally  (opens at http://localhost:8501)
 streamlit run app/streamlit_app.py
 ```
+
+**Run the demo with no API key (mock mode).** Force the deterministic mock agent so it works
+offline / for free:
+
+```bash
+# macOS/Linux
+FORCE_MOCK_LLM=1 streamlit run app/streamlit_app.py
+
+# Windows PowerShell
+$env:FORCE_MOCK_LLM=1; streamlit run app/streamlit_app.py
+```
+
+Then open **http://localhost:8501**, click an example in the sidebar (or type a message), and
+expand the **🔧 Tool chain** under each answer to see every tool call, its input, and its output.
 
 ---
 
