@@ -140,6 +140,54 @@ there is nothing else to launch.
 
 ---
 
+## Testing
+
+All tests run with **no API key** (mock mode). They cover the churn model, the agent
+tool chain, and the eval pipeline.
+
+### Run everything in one command
+```powershell
+.venv\Scripts\python.exe tests/run_all_tests.py
+```
+
+### Or run each test file individually
+```powershell
+# Test 1 — predict_churn (real trained model, no API key)
+# Checks: high-risk, low-risk, messy/partial input, empty input, output schema
+.venv\Scripts\python.exe tests/test_predict.py
+
+# Test 2 — agent tool chain (mock mode)
+# Checks: full chain, ambiguous input, legal escalation, out-of-scope, unknown ID
+.venv\Scripts\python.exe tests/test_agent.py
+
+# Test 3 — eval suite smoke test (mock mode)
+# Checks: all required categories present (≥12 cases), metrics computable, scorecard written
+.venv\Scripts\python.exe tests/test_eval_suite.py
+```
+
+### Or use pytest
+```powershell
+.venv\Scripts\python.exe -m pytest tests/ -v
+```
+
+### Expected output
+```
+Test 1 — predict_churn:    5/5 passed
+Test 2 — agent tool chain: 7/7 passed
+Test 3 — eval suite:       3/3 passed
+OVERALL: 3/3 test modules passed
+```
+
+### What each test covers
+
+| Test file | What it verifies |
+|---|---|
+| `tests/test_predict.py` | `predict_churn()` returns the correct schema; high/low/partial/empty inputs don't crash; probability is in range |
+| `tests/test_agent.py` | Agent chains tools in the right order; asks for ID when missing; escalates on legal threats; declines out-of-scope; stops on unknown ID |
+| `tests/test_eval_suite.py` | All required categories are present (≥12 cases); automated metrics run without error; scorecard file is written |
+
+---
+
 ## Part 1 — Churn model (highlights)
 
 Full narrative is in [`notebooks/churn_model.ipynb`](notebooks/churn_model.ipynb).
