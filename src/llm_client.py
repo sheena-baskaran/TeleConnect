@@ -144,6 +144,8 @@ class OllamaClient:
         import urllib.request  # stdlib — declared here so import cost is local
         self._urllib = urllib.request
         self.base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+        # First call cold-loads the model into RAM (slow on CPU); allow generous time.
+        self.timeout = int(os.getenv("OLLAMA_TIMEOUT", "600"))
         default = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
         if role == "judge":
             self.model = os.getenv("OLLAMA_JUDGE_MODEL", default)
@@ -213,7 +215,7 @@ class OllamaClient:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with self._urllib.urlopen(req, timeout=120) as resp:
+        with self._urllib.urlopen(req, timeout=self.timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         latency = (time.perf_counter() - t0) * 1000
 
