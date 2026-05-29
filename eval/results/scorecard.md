@@ -4,7 +4,7 @@
 
 - **Cases:** 14
 - **Overall pass rate:** 71%
-- **Avg latency/case:** 213.6 ms
+- **Avg latency/case:** 211.5 ms
 - **Tokens (in/out):** 0 / 0
 
 ## Per-category pass rate

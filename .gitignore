@@ -23,3 +23,6 @@ eval/results/raw_runs/
 
 # Interaction log produced by the log_interaction tool at runtime
 data/interaction_log.jsonl
+
+# Assessment brief — kept local, not published to a public repo
+doc/
