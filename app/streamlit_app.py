@@ -41,18 +41,7 @@ elif os.getenv("ANTHROPIC_API_KEY") and not os.getenv("LLM_PROVIDER"):
     os.environ["LLM_PROVIDER"] = "anthropic"
 
 from src.agent.orchestrator import RetentionAgent  # noqa: E402
-from src.llm_client import using_mock, _provider  # noqa: E402
-
-# DEBUG: Show what provider was detected (remove after testing)
-_detected = _provider()
-if _detected != "mock":
-    pass  # Silent if real LLM detected
-else:
-    # Only show debug if mock (to understand why)
-    import sys
-    print(f"DEBUG: GROQ_API_KEY={bool(os.getenv('GROQ_API_KEY'))}, "
-          f"LLM_PROVIDER={os.getenv('LLM_PROVIDER')}, "
-          f"Detected={_detected}", file=sys.stderr)
+from src.llm_client import using_mock  # noqa: E402
 
 st.set_page_config(page_title="TeleConnect Retention Assistant", page_icon="📞",
                    layout="wide")
