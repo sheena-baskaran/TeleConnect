@@ -25,20 +25,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 # Bridge Streamlit secrets -> env so src.llm_client (which reads os.getenv) picks them up.
-# API keys are secrets; provider is auto-detected.
-for _key in ("ANTHROPIC_API_KEY", "AGENT_MODEL", "JUDGE_MODEL", "FORCE_MOCK_LLM",
-             "GROQ_API_KEY", "GROQ_MODEL", "GROQ_JUDGE_MODEL"):
+for _key in ("ANTHROPIC_API_KEY", "AGENT_MODEL", "JUDGE_MODEL", "FORCE_MOCK_LLM"):
     try:
         if _key in st.secrets and not os.getenv(_key):
             os.environ[_key] = str(st.secrets[_key])
     except Exception:
         pass
-
-# Auto-detect LLM provider based on what API key is available.
-if os.getenv("GROQ_API_KEY") and not os.getenv("LLM_PROVIDER"):
-    os.environ["LLM_PROVIDER"] = "groq"
-elif os.getenv("ANTHROPIC_API_KEY") and not os.getenv("LLM_PROVIDER"):
-    os.environ["LLM_PROVIDER"] = "anthropic"
 
 from src.agent.orchestrator import RetentionAgent  # noqa: E402
 from src.llm_client import using_mock  # noqa: E402
@@ -55,17 +47,14 @@ with st.sidebar:
 
     if using_mock():
         st.warning("**Mock mode** — no LLM provider configured. Running the deterministic "
-                   "mock agent. Set `GROQ_API_KEY` in secrets to use real Groq LLM.")
+                   "mock agent. Set `ANTHROPIC_API_KEY` in secrets to use Anthropic Claude.")
     else:
-        provider = os.getenv("LLM_PROVIDER", "groq").lower()
-        if provider == "groq":
-            model = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
-            st.success(f"**Live mode** — Groq · model: `{model}` · ⚡ ultra-fast")
-        elif provider == "ollama":
+        provider = os.getenv("LLM_PROVIDER", "anthropic").lower()
+        if provider == "ollama":
             model = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
             st.success(f"**Live mode** — local Ollama · model: `{model}`")
         else:
-            st.success(f"**Live mode** — Anthropic · model: "
+            st.success(f"**Live mode** — Anthropic Claude · model: "
                        f"`{os.getenv('AGENT_MODEL', 'claude-sonnet-4-6')}`")
 
     st.markdown("### Try an example")
