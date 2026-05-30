@@ -38,6 +38,101 @@ from src.llm_client import using_mock  # noqa: E402
 st.set_page_config(page_title="TeleConnect Retention Assistant", page_icon="📞",
                    layout="wide")
 
+# Custom CSS for better styling
+st.markdown("""
+<style>
+    /* Main background and text */
+    :root {
+        --primary-color: #1f77b4;
+        --success-color: #2ecc71;
+        --warning-color: #e74c3c;
+        --info-color: #3498db;
+    }
+
+    /* Header styling */
+    h1 {
+        color: #1f77b4;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    h2 {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Sidebar improvements */
+    .css-1d391kg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Chat messages */
+    .stChatMessage {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-left: 4px solid #667eea;
+    }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: #f0f2f6;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* Success/warning boxes */
+    .stSuccess {
+        background: #d4edda;
+        border: 2px solid #28a745;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .stWarning {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    /* Caption styling */
+    .stCaption {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Main content area */
+    .main {
+        background: #ffffff;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # --------------------------------------------------------------------------- #
 # Sidebar                                                                     #
 # --------------------------------------------------------------------------- #
@@ -95,22 +190,63 @@ def render_tool_calls(tool_calls: list[dict]):
     if not tool_calls:
         st.caption("_No tools were called for this message._")
         return
-    st.markdown(f"**🔧 Tool chain ({len(tool_calls)} calls)** — shown in execution order:")
-    for tc in tool_calls:
+
+    # Header with tool chain info
+    col1, col2, col3 = st.columns([2, 1, 1])
+    with col1:
+        st.markdown(f"### 🔧 Tool Orchestration")
+    with col2:
+        st.metric("Calls", len(tool_calls))
+    with col3:
+        total_latency = sum(tc["latency_ms"] for tc in tool_calls)
+        st.metric("Total time", f"{total_latency:.0f}ms")
+
+    # Tool chain visualization
+    for idx, tc in enumerate(tool_calls):
         icon = _TOOL_ICON.get(tc["name"], "🔧")
-        with st.expander(f"{icon} **{tc['order']}. {tc['name']}**  ·  {tc['latency_ms']:.0f} ms"):
-            st.markdown("**Input**")
-            st.json(tc["input"])
-            st.markdown("**Output**")
-            st.json(tc["output"])
+        latency_color = "🟢" if tc["latency_ms"] < 100 else "🟡" if tc["latency_ms"] < 500 else "🔴"
+
+        with st.expander(
+            f"{icon} **{tc['order']}. {tc['name']}** {latency_color} {tc['latency_ms']:.0f}ms",
+            expanded=(idx == 0)
+        ):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**📥 Input**")
+                st.json(tc["input"], expanded=False)
+            with col2:
+                st.markdown("**📤 Output**")
+                st.json(tc["output"], expanded=False)
+
+            # Add a visual divider
+            st.markdown("---")
 
 
 # --------------------------------------------------------------------------- #
 # Conversation state + rendering                                              #
 # --------------------------------------------------------------------------- #
-st.title("TeleConnect Retention Assistant")
-st.caption("Type what's happening with the customer. The assistant chains its tools and "
-           "shows its work below each answer.")
+# Header with branding
+st.markdown("""
+<div style="text-align: center; padding: 2rem 0;">
+    <h1 style="color: #1f77b4; margin-bottom: 0.5rem;">📞 TeleConnect</h1>
+    <h3 style="color: #7f8c8d; font-weight: 400; margin-top: 0;">AI-Powered Retention Assistant</h3>
+    <p style="color: #95a5a6; font-size: 1.1rem; margin-top: 1rem;">
+        Real-time churn prediction and personalized retention strategies for your customers
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+st.markdown("""
+💡 **How to use:** Describe what's happening with your customer. The agent will:
+1. 🔍 Look up their profile
+2. 📈 Predict churn risk
+3. 🎁 Suggest retention offers
+4. 📝 Log the interaction
+
+*All tool calls are visible below so you can see exactly how the decision was made.*
+""")
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []  # list of {role, content, tool_calls?, meta?}
