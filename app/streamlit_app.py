@@ -25,12 +25,20 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 # Bridge Streamlit secrets -> env so src.llm_client (which reads os.getenv) picks them up.
-for _key in ("ANTHROPIC_API_KEY", "AGENT_MODEL", "JUDGE_MODEL", "FORCE_MOCK_LLM"):
+# API keys are secrets; provider is auto-detected.
+for _key in ("ANTHROPIC_API_KEY", "AGENT_MODEL", "JUDGE_MODEL", "FORCE_MOCK_LLM",
+             "GROQ_API_KEY", "GROQ_MODEL", "GROQ_JUDGE_MODEL"):
     try:
         if _key in st.secrets and not os.getenv(_key):
             os.environ[_key] = str(st.secrets[_key])
     except Exception:
         pass
+
+# Auto-detect LLM provider based on what API key is available.
+if os.getenv("GROQ_API_KEY") and not os.getenv("LLM_PROVIDER"):
+    os.environ["LLM_PROVIDER"] = "groq"
+elif os.getenv("ANTHROPIC_API_KEY") and not os.getenv("LLM_PROVIDER"):
+    os.environ["LLM_PROVIDER"] = "anthropic"
 
 from src.agent.orchestrator import RetentionAgent  # noqa: E402
 from src.llm_client import using_mock  # noqa: E402
