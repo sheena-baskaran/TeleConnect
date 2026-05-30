@@ -54,8 +54,8 @@ with st.sidebar:
             model = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
             st.success(f"**Live mode** — local Ollama · model: `{model}`")
         else:
-            st.success(f"**Live mode** — Anthropic Claude · model: "
-                       f"`{os.getenv('AGENT_MODEL', 'claude-sonnet-4-6')}`")
+            st.success(f"**Live mode** — Anthropic Claude (Haiku) · model: "
+                       f"`{os.getenv('AGENT_MODEL', 'claude-haiku-4-5-20251001')}`")
 
     st.markdown("### Try an example")
     examples = {

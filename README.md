@@ -10,7 +10,29 @@ A two-part system for a telecom retention team:
 
 The two parts connect: `predict_churn()` from Part 1 becomes one of the agent's tools in Part 2.
 
-> **🔗 Live demo:** _<add your Streamlit Cloud URL here after deploying — see [Deployment](#deployment)>_
+> **🔗 Live demo:** https://teleconnect-retention.streamlit.app
+
+---
+
+## Submission Checklist
+
+| Item | Part | Location | Status |
+|---|---|---|---|
+| Jupyter notebook with markdown narrative | 1 | [notebooks/churn_model.ipynb](notebooks/churn_model.ipynb) | ✅ |
+| Data cleaning code | 1 | [src/data_cleaning.py](src/data_cleaning.py) | ✅ |
+| Data quality summary table | 1 | [notebooks/churn_model.ipynb](notebooks/churn_model.ipynb) (cell: Before/After) | ✅ |
+| EDA visualizations (3+) | 1 | [notebooks/churn_model.ipynb](notebooks/churn_model.ipynb) (churn by contract, tenure, satisfaction) | ✅ |
+| Two models trained & compared | 1 | [notebooks/churn_model.ipynb](notebooks/churn_model.ipynb) + [docs/model_comparison.md](docs/model_comparison.md) | ✅ |
+| Exported model artifact | 1 | [models/churn_pipeline.joblib](models/churn_pipeline.joblib) | ✅ |
+| predict_churn() function | 1 → 2 | [src/predict.py](src/predict.py) | ✅ |
+| Agent orchestration code | 2 | [src/agent/orchestrator.py](src/agent/orchestrator.py) | ✅ |
+| Tool definitions (5 tools) | 2 | [src/agent/tools.py](src/agent/tools.py) | ✅ |
+| Structured test suite (14 cases) | 2 | [eval/test_suite.py](eval/test_suite.py) | ✅ |
+| Automated metrics (3+) | 2 | [eval/metrics.py](eval/metrics.py) | ✅ |
+| LLM-as-judge pipeline | 2 | [eval/judge.py](eval/judge.py) | ✅ |
+| Live demo URL | 2 | https://teleconnect-retention.streamlit.app | ✅ |
+| Results scorecard | 2 | [eval/results/scorecard.md](eval/results/scorecard.md) | ✅ |
+| GitHub repo & README | Both | [sheena-baskaran/TeleConnect](https://github.com/sheena-baskaran/TeleConnect) | ✅ |
 
 ---
 
@@ -316,8 +338,8 @@ Hosted on **Streamlit Community Cloud** (free):
 
 ## Design decisions & documented assumptions
 
-- **LLM provider:** Anthropic Claude (`claude-sonnet-4-6` agent, a *different* judge model for
-  independence), behind a thin abstraction so swapping providers is one class.
+- **LLM provider:** Anthropic Claude (`claude-haiku-4-5-20251001` for both agent and judge),
+  behind a thin abstraction so swapping providers is one class.
 - **`satisfaction_score` scale = 0–10**; values >10 (esp. 99) treated as sentinels.
 - **`internet_service`: `No` = no service; `None`/`nan`/blank = missing** (imputed separately).
 - **`monthly_charges == 15.0` (×110)** kept but flagged — plausibly a real low-tier price;

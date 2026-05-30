@@ -101,9 +101,9 @@ class AnthropicClient:
         self._anthropic = anthropic
         self.client = anthropic.Anthropic()
         if role == "judge":
-            self.model = os.getenv("JUDGE_MODEL", "claude-opus-4-8")
+            self.model = os.getenv("JUDGE_MODEL", "claude-haiku-4-5-20251001")
         else:
-            self.model = os.getenv("AGENT_MODEL", "claude-sonnet-4-6")
+            self.model = os.getenv("AGENT_MODEL", "claude-haiku-4-5-20251001")
         self.is_mock = False
 
     def respond(self, system: str, messages: list[dict], tools: list[dict] | None = None,
