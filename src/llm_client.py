@@ -145,7 +145,8 @@ class GroqClient:
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("GROQ_API_KEY env var is required for Groq provider")
-        self.client = Groq(api_key=api_key)
+        # Initialize Groq client with explicit timeout
+        self.client = Groq(api_key=api_key, timeout=30.0)
         if role == "judge":
             self.model = os.getenv("GROQ_JUDGE_MODEL", "mixtral-8x7b-32768")
         else:
