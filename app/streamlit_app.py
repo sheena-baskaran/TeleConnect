@@ -66,11 +66,13 @@ with st.sidebar:
 
     if using_mock():
         st.warning("**Mock mode** — no LLM provider configured. Running the deterministic "
-                   "mock agent. Set `ANTHROPIC_API_KEY`, or `LLM_PROVIDER=ollama` for a local "
-                   "model, to use a real LLM.")
+                   "mock agent. Set `GROQ_API_KEY` in secrets to use real Groq LLM.")
     else:
-        provider = os.getenv("LLM_PROVIDER", "anthropic").lower()
-        if provider == "ollama":
+        provider = os.getenv("LLM_PROVIDER", "groq").lower()
+        if provider == "groq":
+            model = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
+            st.success(f"**Live mode** — Groq · model: `{model}` · ⚡ ultra-fast")
+        elif provider == "ollama":
             model = os.getenv("OLLAMA_MODEL", "qwen2.5:7b-instruct")
             st.success(f"**Live mode** — local Ollama · model: `{model}`")
         else:
